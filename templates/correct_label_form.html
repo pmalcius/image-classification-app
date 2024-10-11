@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Provide Correct Label</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Provide the Correct Label</h1>
+        <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="Uploaded Image">
+        <form method="post" action="/update_model">
+            <input type="hidden" name="image_path" value="{{ image }}">
+            <label for="correct_label">Correct Label:</label>
+            <input type="text" name="correct_label" id="correct_label" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

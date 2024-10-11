@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Result</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+        <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Uploaded Image">
+        
+        <h2>Top Prediction:</h2>
+        <p class="prediction">{{ top_prediction[0] }} - {{ (top_prediction[1]*100)|round(2) }}%</p>
+
+        <form method="post" action="/feedback">
+            <input type="hidden" name="image_path" value="{{ image_file }}">
+            <input type="hidden" name="predicted_label" value="{{ top_prediction[0] }}">
+            <p>Was the top prediction correct?</p>
+            <button type="submit" name="feedback" value="correct">Yes</button>
+            <button type="submit" name="feedback" value="wrong">No</button>
+        </form>
+    </div>
+</body>
+</html>

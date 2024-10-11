@@ -1,50 +1,33 @@
 import torch
 import torch.nn as nn
 from torchvision import models
+from torchvision.models import ResNet18_Weights
 import json
+import os
 
 # Load ImageNet class names from a JSON file
-def load_class_names(file_path='imagenet_class_names.json'):
+def load_class_names(file_path='imagenet-simple-labels.json'):
     with open(file_path, 'r') as f:
         class_names = json.load(f)
     return class_names
 
 class ImageClassifier(nn.Module):
-    def __init__(self, num_classes=1000):
+    def __init__(self):
         super(ImageClassifier, self).__init__()
-
-        # Load resNet18
-        self.model = models.resnet18(pretrained=True)
-
-        for param in self.model.parameters():
-            param.requires_grad = False
-
-        num_features = self.model.fc.in_features
-        self.model.fc = nn.Linear(num_features, num_classes)
+        # Load the pre-trained ResNet-18 model
+        self.model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+        self.model.eval()  # Set the model to evaluation mode
 
     def forward(self, x):
         return self.model(x)
 
-def load_model(model_path, num_classes=1000, device='cpu'):
-    model = ImageClassifier(num_classes)
-    
-    model.load_state_dict(torch.load(model_path, map_location=device))
-
-    model.eval()
-
+def load_model(model_path=None, device='cpu'):
+    model = ImageClassifier()
     model.to(device)
-    
+    # If a saved model exists, load its state
+    if model_path is not None and os.path.exists(model_path):
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        print(f"Model loaded from {model_path}")
+    else:
+        print("Using pre-trained ResNet-18 model.")
     return model
-
-def predict(model, input_tensor, device, class_names):
-    model.eval()
-    
-    input_tensor = input_tensor.to(device)
-    
-    with torch.no_grad():
-        output = model(input_tensor)
-        
-        _, predicted = torch.max(output, 1)
-    
-    # Return the class name
-    return class_names[predicted.item()]
