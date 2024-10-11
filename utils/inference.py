@@ -1,0 +1,1 @@
+# Write functions to load the model and make predictions on preprocessed images
